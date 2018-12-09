@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.bootcss.com/vue/2.2.3/vue.min.js"></script>
+    <script src="https://cdn.bootcss.com/vue-resource/1.5.1/vue-resource.min.js"></script>
+</head>
+<body>
+    <div id="app">
+        姓名:<input type="text" v-model="name">
+            <button v-on:click="findByName">查询</button>
+            <button v-on:click="addStudent">添加</button>
+        <ol >
+            <li v-for="student in students" :key="student.id" v-on:click="delStudent(student)">
+                {{student.name}}
+            </li>
+        </ol>
+    </div>
+</body>
+<script>
+    Vue.http.options.emulateJSON = true;
+    Vue.http.options.emulateHTTP = true;
+    var vm = new Vue({
+        el:'#app',
+        data:{
+            students : [],
+            name : ''
+        },
+        mounted: function () {
+            this.findAll();
+        },
+        methods:{
+            findAll:function () {
+                this.$http.get("http://localhost:8083/student/findAll")
+                    .then(function (res) {
+                        console.log(res.data);
+                        this.students = res.data;
+                    })
+                    .catch(function (res) {
+                        console.log(res)
+                })
+            },
+            findByName:function () {
+                this.$http.get("http://localhost:8081/student/findByName?name="+this.name)
+                    .then(function (res) {
+                        console.log(res.data);
+                        this.students = [];
+                        this.students = res.data;
+                    })
+                    .catch(function (res) {
+                        console.log(res)
+                    })
+            },
+            addStudent:function () {
+                this.$http.get("http://localhost:8081/student/add?name="+this.name)
+                    .then(function (res) {
+                        console.log(res.data);
+                        this.students.push(res.data);
+                        this.name = '';
+                    })
+                    .catch(function (res) {
+                        console.log(res)
+                    })
+            },
+            delStudent:function (student) {
+                this.$http.get("http://localhost:8081/student/deleteById?id="+student.id)
+                    .then(function () {
+                        this.students.splice(this.students.indexOf(student),1);
+                    }).catch(function () {
+                    console.log('删除失败');
+                })
+            }
+        }
+
+    })
+</script>
+</html>
