@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.RequestMapping
 
 @Controller
 class HtmlController {
-    @RequestMapping("index")
+   /* @RequestMapping("index")
     fun index():String{
         return "index";
-    }
+    }*/
 }

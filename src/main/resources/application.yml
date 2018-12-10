@@ -13,13 +13,16 @@ spring:
     thymeleaf:
       cache: false
     profiles:
-      active: prod
+      active: prod #激活生产环境
 server:
   port: 8081
+debug: false
 
 
 ---
 server:
-  port: 8083
+  port: 8082
 spring:
   profiles: prod
+logging:
+  path: /Users/haominglfs/work-log

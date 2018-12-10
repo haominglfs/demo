@@ -21,6 +21,7 @@
 <script>
     Vue.http.options.emulateJSON = true;
     Vue.http.options.emulateHTTP = true;
+    var ctx = 'http://localhost:8082/';
     var vm = new Vue({
         el:'#app',
         data:{
@@ -32,7 +33,7 @@
         },
         methods:{
             findAll:function () {
-                this.$http.get("http://localhost:8083/student/findAll")
+                this.$http.get(ctx+"student/findAll")
                     .then(function (res) {
                         console.log(res.data);
                         this.students = res.data;
@@ -42,7 +43,7 @@
                 })
             },
             findByName:function () {
-                this.$http.get("http://localhost:8081/student/findByName?name="+this.name)
+                this.$http.get(ctx+"student/findByName?name="+this.name)
                     .then(function (res) {
                         console.log(res.data);
                         this.students = [];
@@ -53,7 +54,7 @@
                     })
             },
             addStudent:function () {
-                this.$http.get("http://localhost:8081/student/add?name="+this.name)
+                this.$http.get(ctx+"student/add?name="+this.name)
                     .then(function (res) {
                         console.log(res.data);
                         this.students.push(res.data);
@@ -64,7 +65,7 @@
                     })
             },
             delStudent:function (student) {
-                this.$http.get("http://localhost:8081/student/deleteById?id="+student.id)
+                this.$http.get(ctx+"student/deleteById?id="+student.id)
                     .then(function () {
                         this.students.splice(this.students.indexOf(student),1);
                     }).catch(function () {

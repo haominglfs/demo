@@ -2,6 +2,7 @@ package club.haominglfs.demo
 
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.slf4j.LoggerFactory
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
 
@@ -11,6 +12,14 @@ class DemoApplicationTests {
 
 	@Test
 	fun contextLoads() {
+        val log = LoggerFactory.getLogger(this.javaClass);
+        log.trace("....trace...")
+        log.debug("....debug....")
+        log.info("...info...")
+        log.warn("....warn....")
+        log.error(".....error...")
+
+
 	}
 
 }
