@@ -3,8 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <script src="https://cdn.bootcss.com/vue/2.2.3/vue.min.js"></script>
-    <script src="https://cdn.bootcss.com/vue-resource/1.5.1/vue-resource.min.js"></script>
 </head>
 <body>
     <div id="app">
@@ -18,56 +16,62 @@
         </ol>
     </div>
 </body>
+<script  type="text/javascript" src="webjars/vue/2.1.3/vue.min.js"></script>
+<script type="text/javascript" src="webjars/axios/0.18.0/dist/axios.min.js" ></script>
 <script>
-    Vue.http.options.emulateJSON = true;
-    Vue.http.options.emulateHTTP = true;
     var ctx = 'http://localhost:8082/';
     var vm = new Vue({
         el:'#app',
-        data:{
-            students : [],
-            name : ''
+        data:function(){
+            return {
+                students: [],
+                name: ''
+            }
         },
         mounted: function () {
             this.findAll();
         },
         methods:{
             findAll:function () {
-                this.$http.get(ctx+"student/findAll")
+                    var _this = this;
+                    axios.get(ctx+"student/findAll")
                     .then(function (res) {
                         console.log(res.data);
-                        this.students = res.data;
+                        _this.students = res.data;
                     })
                     .catch(function (res) {
                         console.log(res)
                 })
             },
             findByName:function () {
-                this.$http.get(ctx+"student/findByName?name="+this.name)
+                    var _this = this;
+                    axios.get(ctx+"student/findByName?name="+this.name)
                     .then(function (res) {
                         console.log(res.data);
-                        this.students = [];
-                        this.students = res.data;
+                        _this.students = [];
+                        _this.students = res.data;
                     })
                     .catch(function (res) {
                         console.log(res)
                     })
             },
             addStudent:function () {
-                this.$http.get(ctx+"student/add?name="+this.name)
+                    var _this = this;
+                    axios.get(ctx+"student/add?name="+this.name)
                     .then(function (res) {
                         console.log(res.data);
-                        this.students.push(res.data);
-                        this.name = '';
+                        _this.students.push(res.data);
+                        _this.name = '';
                     })
                     .catch(function (res) {
                         console.log(res)
                     })
             },
             delStudent:function (student) {
-                this.$http.get(ctx+"student/deleteById?id="+student.id)
+                    var _this = this;
+                    axios.get(ctx+"student/deleteById?id="+student.id)
                     .then(function () {
-                        this.students.splice(this.students.indexOf(student),1);
+                        _this.students.splice(_this.students.indexOf(student),1);
                     }).catch(function () {
                     console.log('删除失败');
                 })
