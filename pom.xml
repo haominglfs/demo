@@ -16,8 +16,14 @@
 	<description>Demo project for Spring Boot</description>
 
 	<properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
 		<kotlin.version>1.2.71</kotlin.version>
+        <!--<thymeleaf.version>3.0.9.RELEASE</thymeleaf.version>-->
+        <!-- 布局功能的支持程序  thymeleaf3主程序  layout2以上版本 -->
+        <!-- thymeleaf2   layout1-->
+        <!--<thymeleaf-layout-dialect.version>2.2.2</thymeleaf-layout-dialect.version>-->
 	</properties>
 
 	<dependencies>
@@ -30,10 +36,10 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
         <!-- 请求静态数据 -->
-        <!--<dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
-        </dependency>-->
+        </dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.module</groupId>
 			<artifactId>jackson-module-kotlin</artifactId>
@@ -80,6 +86,12 @@
             <artifactId>axios</artifactId>
             <version>0.18.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>bootstrap</artifactId>
+            <version>4.0.0</version>
+        </dependency>
         <!--webjars end-->
 
 
@@ -93,6 +105,11 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <jvmArguments>
+                        -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005
+                    </jvmArguments>
+                </configuration>
 			</plugin>
 			<plugin>
 				<artifactId>kotlin-maven-plugin</artifactId>

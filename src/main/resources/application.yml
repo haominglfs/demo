@@ -11,7 +11,7 @@ spring:
           hbm2ddl:
             auto: update
     thymeleaf:
-      cache: false
+      cache: false #禁用模板缓存
     profiles:
       active: prod #激活生产环境
 server:
@@ -24,5 +24,8 @@ server:
   port: 8082
 spring:
   profiles: prod
+  messages:
+    basename: i18n.login
 logging:
   path: /Users/haominglfs/work-log
+

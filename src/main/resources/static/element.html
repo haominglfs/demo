@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <style>
+        .el-header {
+            background-color: #B3C0D1;
+            color: #333;
+            line-height: 60px;
+        }
+
+        .el-aside {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <el-container style="height: 99%; border: 1px solid #eee">
+        <el-header style="text-align: right; font-size: 12px">
+            <el-dropdown @command="handleCommand">
+                <i class="el-icon-setting" style="margin-right: 15px"></i>
+                <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item command="add">新增</el-dropdown-item>
+                    <el-dropdown-item>删除</el-dropdown-item>
+                </el-dropdown-menu>
+            </el-dropdown>
+            <span>hm</span>
+        </el-header>
+        <el-container>
+            <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
+                <el-menu :default-openeds="['1', '3']">
+                    <el-submenu index="1">
+                        <template slot="title"><i class="el-icon-message"></i>导航一</template>
+                        <el-menu-item-group>
+                            <template slot="title">分组一</template>
+                            <el-menu-item index="1-1">选项1</el-menu-item>
+                            <el-menu-item index="1-2">选项2</el-menu-item>
+                        </el-menu-item-group>
+                        <el-menu-item-group title="分组2">
+                            <el-menu-item index="1-3">选项3</el-menu-item>
+                        </el-menu-item-group>
+                        <el-submenu index="1-4">
+                            <template slot="title">选项4</template>
+                            <el-menu-item index="1-4-1">选项4-1</el-menu-item>
+                        </el-submenu>
+                    </el-submenu>
+                </el-menu>
+            </el-aside>
+            <el-main>
+                <el-table :data="students" height="600" stripe >
+                    <el-table-column
+                        type="selection"
+                        width="55">
+                    </el-table-column>
+                    <el-table-column prop="id" label="id" >
+                    </el-table-column>
+                    <el-table-column prop="name" label="姓名" sortable>
+                    </el-table-column>
+                    <el-table-column prop="passwd" label="密码">
+                    </el-table-column>
+                    <el-table-column label="操作">
+                        <template slot-scope="scope">
+                            <el-button
+                                    @click="handleEdit(scope.$index, scope.row)"
+                                    type="text"
+                                    size="small">
+                                编辑
+                            </el-button>
+                            <el-button
+                                    @click="delStudent(scope.row)"
+                                    type="text"
+                                    size="small">
+                                移除
+                            </el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <div class="block">
+                    <el-pagination
+                            layout="prev, pager, next"
+                            :total="total"
+                            @current-change="currentChange">
+                    </el-pagination>
+                </div>
+            </el-main>
+        </el-container>
+    </el-container>
+
+    <!--编辑界面-->
+    <el-dialog title="编辑" :visible.sync="editFormVisible">
+        <el-form :model="editForm" label-width="80px"  ref="editForm">
+            <el-form-item label="id" prop="id">
+                <el-input v-model="editForm.id" auto-complete="off" disabled="true"></el-input>
+            </el-form-item>
+            <el-form-item label="姓名" prop="name">
+                <el-input v-model="editForm.name"></el-input>
+            </el-form-item>
+            <el-form-item label="密码" prop="passwd">
+                <el-input v-model="editForm.passwd"></el-input>
+            </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click.native="editFormVisible = false">取消</el-button>
+            <el-button type="primary" @click="editSubmit" >提交</el-button>
+        </div>
+    </el-dialog>
+
+    <!--添加界面-->
+    <el-dialog title="添加" :visible.sync="addFormVisible">
+        <el-form :model="editForm" label-width="80px"  ref="editForm">
+            <el-form-item label="id" prop="id">
+                <el-input v-model="editForm.id" auto-complete="off" disabled="true"></el-input>
+            </el-form-item>
+            <el-form-item label="姓名" prop="name">
+                <el-input v-model="editForm.name"></el-input>
+            </el-form-item>
+            <el-form-item label="密码" prop="passwd">
+                <el-input v-model="editForm.passwd"></el-input>
+            </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click.native="addFormVisible = false">取消</el-button>
+            <el-button type="primary" @click="addSubmit" >提交</el-button>
+        </div>
+    </el-dialog>
+</div>
+</body>
+<script  type="text/javascript" src="webjars/vue/2.5.16/vue.min.js"></script>
+<script type="text/javascript" src="webjars/axios/0.18.0/dist/axios.min.js" ></script>
+<!-- 引入组件库 -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
+<script>
+    var ctx = 'http://localhost:8082/';
+    var vm = new Vue({
+        el:'#app',
+        data:function(){
+            var editForm ={
+                id: 0,
+                name:'',
+                passwd:''
+            };
+            return {
+                students: [],
+                id:'',
+                name: '',
+                passwd:'',
+                pageSize:9,
+                currentPage:0,
+                total:0,
+                editFormVisible:false,
+                addFormVisible:false,
+                editForm:editForm
+            }
+        },
+        mounted: function () {
+            this.findAll();
+        },
+        methods:{
+            currentChange:function(currentPage){
+                this.currentPage = currentPage-1;
+                this.findAll();
+            },
+            handleEdit: function (index, row) {
+                this.editFormVisible = true;
+                this.editForm = Object.assign({}, row);
+            },
+            editSubmit:function () {
+                this.id = this.editForm.id;
+                this.name = this.editForm.name;
+                this.passwd = this.editForm.passwd;
+                this.updateStudent();
+                this.editFormVisible = false;
+            },
+            handleCommand: function(command) {
+                if('add'===command){
+                    this.handleAdd();
+                }
+            },
+            handleAdd: function () {
+                this.addFormVisible = true;
+
+            },
+            addSubmit:function () {
+                this.name = this.editForm.name;
+                this.passwd = this.editForm.passwd;
+                this.addStudent();
+                this.addFormVisible = false;
+            },
+            findAll:function () {
+                var _this = this;
+                axios.get(ctx+"student/findAll?page="+_this.currentPage+'&size='+_this.pageSize)
+                    .then(function (res) {
+                        debugger;
+                        console.log(res.data);
+                        _this.students = res.data.content;
+                        _this.total = res.data.totalElements;
+                    })
+                    .catch(function (res) {
+                        console.log(res)
+                    })
+            },
+            findByName:function () {
+                var _this = this;
+                axios.get(ctx+"student/findByName?name="+this.name)
+                    .then(function (res) {
+                        console.log(res.data);
+                        _this.students = [];
+                        _this.students = [res.data];
+                    })
+                    .catch(function (res) {
+                        console.log(res)
+                    })
+            },
+            addStudent:function () {
+                var _this = this;
+                axios.get(ctx+"student/add?name="+_this.name+"&passwd="+_this.passwd)
+                    .then(function (res) {
+                        console.log(res.data);
+                        _this.students.push(res.data);
+                        _this.name = '';
+                    })
+                    .catch(function (res) {
+                        console.log(res)
+                    })
+            },
+            delStudent:function (student) {
+                debugger;
+                console.log('要删除的'+student.id);
+                var _this = this;
+                axios.get(ctx+"student/deleteById?id="+student.id)
+                    .then(function () {
+                        _this.students.splice(_this.students.indexOf(student),1);
+                        _this.$message(
+                                {
+                                    message:'删除成功！',
+                                    type:'success',
+                                    center: true
+                                }
+                            );
+                    }).catch(function () {
+                        this.$message.error('删除失败!');
+                })
+            },
+            updateStudent:function () {
+                var _this = this;
+                debugger;
+                axios.get(ctx+"student/updateStudent?name="+_this.name+"&passwd="+_this.passwd+"&id="+_this.id)
+                    .then(function (res) {
+                        console.log(res.data);
+                        _this.findAll();
+                    })
+                    .catch(function (res) {
+                        console.log(res)
+                    })
+            }
+        }
+
+    })
+
+</script>
+</html>

@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
 </head>
 <body>
     <div id="app">
         姓名:<input type="text" v-model="name">
+        密码:<input type="text" v-model="passwd">
             <button v-on:click="findByName">查询</button>
             <button v-on:click="addStudent">添加</button>
         <ol >
@@ -16,8 +19,11 @@
         </ol>
     </div>
 </body>
-<script  type="text/javascript" src="webjars/vue/2.1.3/vue.min.js"></script>
+<script  type="text/javascript" src="webjars/vue/2.5.16/vue.min.js"></script>
 <script type="text/javascript" src="webjars/axios/0.18.0/dist/axios.min.js" ></script>
+<!-- 引入组件库 -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
 <script>
     var ctx = 'http://localhost:8082/';
     var vm = new Vue({
@@ -25,7 +31,8 @@
         data:function(){
             return {
                 students: [],
-                name: ''
+                name: '',
+                passwd:''
             }
         },
         mounted: function () {
@@ -49,7 +56,7 @@
                     .then(function (res) {
                         console.log(res.data);
                         _this.students = [];
-                        _this.students = res.data;
+                        _this.students = [res.data];
                     })
                     .catch(function (res) {
                         console.log(res)
@@ -57,7 +64,7 @@
             },
             addStudent:function () {
                     var _this = this;
-                    axios.get(ctx+"student/add?name="+this.name)
+                    axios.get(ctx+"student/add?name="+this.name+"&passwd="+this.passwd)
                     .then(function (res) {
                         console.log(res.data);
                         _this.students.push(res.data);
